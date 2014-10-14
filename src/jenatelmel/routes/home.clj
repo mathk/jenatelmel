@@ -1,6 +1,8 @@
 (ns jenatelmel.routes.home
   (:require [compojure.core :refer :all]
-            [jenatelmel.views.layout :as layout]))
+            [jenatelmel.views.layout :as layout]
+            [hiccup.form :refer :all]))
+
 
 (defn home []
   (layout/common
