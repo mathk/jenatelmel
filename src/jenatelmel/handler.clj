@@ -5,10 +5,13 @@
             [hiccup.middleware :refer [wrap-base-url]]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [jenatelmel.routes.home :refer [home-routes]]))
+            [jenatelmel.routes.home :refer [home-routes]]
+            [jenatelmel.models.db :as db]))
 
 (defn init []
-  (println "jenatelmel is starting"))
+  (println "jenatelmel is starting")
+  (if-not (.exists (java.io.File. "./db.sq3"))
+    (db/create-contact-request-table)))
 
 (defn destroy []
   (println "jenatelmel is shutting down"))
