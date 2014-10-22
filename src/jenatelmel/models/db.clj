@@ -1,6 +1,9 @@
 (ns jenatelmel.models.db
-  (:require [clojure.java.jdbc :as sql])
-  (:import java.sql.DriverManager))
+  (:require [clojure.java.jdbc :as sql]
+            [monger.core :as mg]
+            [monger.collection :as mc])
+  (:import java.sql.DriverManager
+           [org.bson.types ObjectId]))
 
 (def db {:classname    "org.sqlite.JDBC",
          :subprotocol  "sqlite",
@@ -33,3 +36,11 @@
      [:email "TEXT"]
      [:message "TEXT"])
     (sql/do-commands "CREATE INDEX timestamp_index ON contact_requests (creation_utc)")))
+
+
+;; Model using  mangodb
+(let [conn (mg/connect)
+      db (mg/get-db conn "test")]
+  (mc/insert db "doc2" {:_id (ObjectId.) :first_name "John" :last_name "Lenon"}))
+
+
