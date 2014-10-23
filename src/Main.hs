@@ -1,7 +1,36 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+
 module Main where
 import MFlow.Wai.Blaze.Html.All
+import Data.Typeable
 
-main = runNavigation "sum" . transientNav $ sumIt
+data Menu = About | SumIt | Help
+    deriving (Typeable, Show)
+
+{- instance Typeable Menu where
+    typeOf About = mkTyCon "About"
+    typeOf SumIt = mkTyCon "SumIt"
+    typeOf Help = mkTyCon "Help"
+-}
+
+main = runNavigation "" . transientNav $ Main.menu
+
+
+menu = do
+    r <- page $ h3 << "Menu"
+              ++> wlink About << b << "About" <++ br
+              <|> wlink SumIt << b << "Sumit" <++ br
+              <|> wlink Help << b << "Help"
+    case r of 
+        About -> do 
+            page $ p << "Something to say"
+                 ++> wlink () << p << "Home"
+            return ()
+        SumIt -> sumIt
+        Help -> do
+            page $ p << "What can I do for you?"
+                 ++> stop
+            return ()
 
 sumIt = do 
     setHeader $ html . body
