@@ -4,43 +4,52 @@ module Main where
 import MFlow.Wai.Blaze.Html.All
 import Data.Typeable
 
-data Menu = About | SumIt | Help
+data Menu = About | SumIt | SumIt2 | SumIt3 | Help
     deriving (Typeable, Show)
 
-{- instance Typeable Menu where
-    typeOf About = mkTyCon "About"
-    typeOf SumIt = mkTyCon "SumIt"
-    typeOf Help = mkTyCon "Help"
--}
-
-main = runNavigation "" . transientNav $ Main.menu
-
+main = runNavigation "" . step . page . pageFlow "s" $  sumIt3--Main.menu
 
 menu = do
-    r <- page $ h3 << "Menu"
+    r <- h3 << "Menu"
               ++> wlink About << b << "About" <++ br
               <|> wlink SumIt << b << "Sumit" <++ br
+              <|> wlink SumIt2 << b << "Sumit2" <++ br
+              <|> wlink SumIt3 << b << "Sumit3" <++ br
               <|> wlink Help << b << "Help"
     case r of 
         About -> do 
-            page $ p << "Something to say"
+            p << "Something to say"
                  ++> wlink () << p << "Home"
-            return ()
         SumIt -> sumIt
+        SumIt3 -> sumIt3
+        SumIt2 -> do 
+            sumIt2
         Help -> do
-            page $ p << "What can I do for you?"
+            p << "What can I do for you?"
                  ++> stop
-            return ()
 
 sumIt = do 
-    setHeader $ html . body
-    n1 <- ask $ p << "First number"
+    return br
+    n1 <- p << "First number"
               ++> getInt Nothing
               <** submitButton "send"
-    n2 <- ask $ p << "Second number"
+    n2 <- p << "Second number"
               ++> getInt Nothing
               <** submitButton "send"
-    ask $ p << ("The result is " ++ show (n1 + n2))
+    p << ("The result is " ++ show (n1 + n2))
         ++> wlink () << p << "click here"
 
+sumIt2 = do
+    return br
+    n <- getInt Nothing <** submitButton "first" <++ br
+    n' <- getInt (Just n) <** submitButton "second" <++ br
+    p << (n+n') ++> wlink SumIt2 << b << "click to repeat" <++ br
+                <** wlink ()  << b << "Home"
+    return ()
 
+
+sumIt3 = do
+    n <- p << "First" ++> getInt Nothing <++ br
+    n' <- p << "Second" ++> getInt (Just n) <++ br
+    p << (n+n') ++> noWidget
+    <** br ++> pageFlow "button" (submitButton "submit")
